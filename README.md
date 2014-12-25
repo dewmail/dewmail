@@ -45,7 +45,7 @@ The previous example describes the default setup. There are a few options that m
 Option|Type|Function
 ------|----|--------
 ```OptDomainCheckingOn```|```bool```|If ```true```, will enforce only accepting mail for specific domains in ```OptValidDomains```. Default, off, ```false```.
-```OptValidDomains```|```string []```|Domain(s) to accept emails for. By default, not used.
+```OptValidDomains```|```[]string```|Domain(s) to accept emails for. By default, not used.
 ```OptAPIRoute```|```string```|Route for Dewmail to post to (with leading and trailing slashes). Default, ```/```.
 ```OptToHTTPS```|```bool```|Whether to use HTTPS/HTTP for post request. Default, HTTPS, ```true```.
 
