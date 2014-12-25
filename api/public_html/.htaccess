@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+        Options -Indexes
+        RewriteEngine On
+
+	# Rewrite request for test@domain to api.php
+        RewriteCond %{REQUEST_URI} ^/test
+        RewriteRule (.*) /api.php [L]
+</IfModule>
+
