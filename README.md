@@ -1,42 +1,46 @@
 Dewmail
 =======
 
-An easily deployable SMTP server system for integrating with existing API using convenient hooks. Written in Go. Receive email at your project's email address and automatically initiate a JSON formatted POST request to your app's API.
+An easily deployable SMTP server system for integrating with existing API using convenient hooks. Written in Go. Receive email at your project's email address and automatically initiate a JSON formatted POST request to your app's existing API.
 
 ## Use ##
 Dewmail will receive emails on behalf of your domain and initiate a JSON encoded POST request to your API. Let's look at a specific example to cover some of the implementation details.
 
-If you create the following MX record for your domain ```example.com```
+First, create the following MX records for your domain ```example.com```
 
 		TYPE|SUBDOMAIN|MAILSERVER HOST|PREF|TTL
 		----|---------|---------------|----|---
-		MX|do|dewmail.withaspark.com.|10|300
+		MX|api|in1.dewmail.io.|10|300
+		MX|api|in2.dewmail.io.|20|300
 
-You may then send an email from any client--for example, the following message.
+You may then send an email from any client--for example, consider the following message.
 
-To: ```foo+bar@do.example.com```
-Subject: ```mail```
-Body: ```unsubscribe```
+```
+To: foo+bar@api.example.com
+Subject: mail
+Body: unsubscribe
+```
 		
-Dewmail will receive and parse your email generating the following JSON request ```{"from":"client@example.org","to":"foo+bar@do.example.com","subject":"mail","body":"unsubscribe"}```, which it will submit to ```http://do.example.com/foo/bar```. Your API can then parse the message as you see fit.
+Dewmail will receive and parse your email generating the following JSON request ```{"from":"client@example.org","to":"foo+bar@api.example.com","subject":"mail","body":"unsubscribe"}```, which it will submit to ```http://api.example.com/foo/bar```. Your API can then parse the message however you see fit.
 
 ## Demo ##
 
-For a demo, send an email to [test@dewmail.withaspark.com](mailto:test@dewmail.withaspark.com) and go to [http://dewmail.withaspark.com/](http://dewmail.withaspark.com/).
+For a demo, send an email to [test@demo.dewmail.io](mailto:test@demo.dewmail.io) and go to [http://demo.dewmail.io/](http://demo.dewmail.io/).
 
 ## Install ##
 1. Add the following MX record to the domain you wish to receive calls from Dewmail.
 
 		TYPE|SUBDOMAIN|MAILSERVER HOST|PREF|TTL
 		----|---------|---------------|----|---
-		MX|somesubdomain|dewmail.withaspark.com.|10|300
+		MX|somesubdomain|in1.dewmail.io.|10|300
+		MX|somesubdomain|in2.dewmail.io.|20|300
 
 	**Note:** this will be the domain of the email address you must receive messages at and also the domain Dewmail will POST to looking for your API.
 2. Pull down Dewmail binary or build from source.
-3. Optional, add site to webserver if you want a way to query app status via HTTP. A sample Apache site .conf file is provided as an example [dewmail.apache.conf](dewmail.apache.conf), which will listen for requests to ```/up``` and will display a message that the service is up.
+3. Optional, add site to webserver if you want a way to query app status via HTTP. A sample Apache [.htaccess](api/public_html/.htaccess) file is provided to proxy requests for ```/up``` to the Dewmail app and will display a message if the service is up.
 4. Make sure port 25 isn't blocked by your firewall.
 5. Start Dewmail.
-6. Send Dewmail your email.
+6. Start sending emails.
 
 ## Configuration ##
 
