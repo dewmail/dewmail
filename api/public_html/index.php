@@ -25,6 +25,9 @@
 <html>
 	<head>
 		<title>Dewmail Demo</title>
+		<style type="text/css">
+		body { padding: 2em; }
+		</style>
 	</head>
 	<body>
 		<h1>Dewmail Demo</h1>
@@ -33,14 +36,16 @@
 			Try me.
 			Send an email to
 			<code>
-			<a href="mailto:test@dewmail.withaspark.com">test@dewmail.withaspark.com</a>
+			<a href="mailto:test@demo.dewmail.io">test@demo.dewmail.io</a>
 			</code>
 			and hit F5 to refresh this page.
 		</p>
 
-		<pre>
-<?php echo file_get_contents("temp/last.log"); ?>
-		</pre>
+		<p>
+			Last message received:
+		</p>
+		<pre style="padding: 2em; background-color: #eee;">
+<?php echo file_get_contents("temp/last.log"); ?></pre>
 
 	</body>
 </html>

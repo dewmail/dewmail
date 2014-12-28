@@ -1,9 +1,12 @@
 <IfModule mod_rewrite.c>
-        Options -Indexes
-        RewriteEngine On
+	Options -Indexes
+	RewriteEngine On
 
-	# Rewrite request for test@domain to api.php
-        RewriteCond %{REQUEST_URI} ^/test
-        RewriteRule (.*) /api.php [L]
+	# Redirect /test to our API handler
+	# test@domain goes to domain/test
+	RewriteRule ^test(.*)$ /api.php [L]
+
+	# Proxy up to go app so we can see when up
+	RewriteRule ^up(.*)$ http://localhost:8111/$1 [P,L]
 </IfModule>
 
