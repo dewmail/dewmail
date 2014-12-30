@@ -22,30 +22,41 @@
  * SOFTWARE.
  */
 ?>
-<html>
+<!doctype html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>Dewmail Demo</title>
 		<style type="text/css">
 		body { padding: 2em; }
+		div.code, code {
+			background-color: #eee;
+			word-wrap: break-word;
+			padding: 0.5em;
+		}
+		div.code { padding: 1em; }
 		</style>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	</head>
 	<body>
 		<h1>Dewmail Demo</h1>
 
-		<p>
-			Try me.
-			Send an email to
-			<code>
-			<a href="mailto:test@demo.dewmail.io">test@demo.dewmail.io</a>
-			</code>
-			and hit F5 to refresh this page.
-		</p>
+                <h3>Recent Messages</h3>
+                <p>
+                        Try me! Send an email to <code><a href="mailto:test@demo.dewmail.io">test@demo.dewmail.io</a></code> and watch here.
+                </p>
+                <div class="code" id="dewmail-recent"></code>
 
-		<p>
-			Last message received:
-		</p>
-		<pre style="padding: 2em; background-color: #eee;">
-<?php echo file_get_contents("temp/last.log"); ?></pre>
+		<!-- Firebase -->
+		<script src="https://cdn.firebase.com/js/client/2.0.6/firebase.js"></script>
+		<script type="text/javascript">
+		var fb = new Firebase("<YOUR FIREBASE>");
+		fb.limitToLast(2).on("child_added", function(data) {
+			$("#dewmail-recent").prepend(JSON.stringify(data.val()) + "<br>");
+		});
+		</script>
 
 	</body>
 </html>

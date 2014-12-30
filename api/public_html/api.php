@@ -24,11 +24,24 @@
 
 
 
-file_put_contents("temp/last.log", file_get_contents('php://input'));
+// Get json post data
+$sData = file_get_contents('php://input');
+$Data = json_decode($sData);
+// Obscure from email addresses
+$Data->from = preg_replace("/^(.).*@/", "\\1*****@", $Data->from);
 
 $response = array(
 	"status"=>"good",
 	"response"=>0,
 );
+
+// Push record to firebase
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, "<YOUR FIREBASE>");
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($Data));
+curl_exec($curl);
+curl_close($curl);
+
 echo json_encode($response);
 ?>
