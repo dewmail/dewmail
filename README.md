@@ -25,7 +25,7 @@ Dewmail will receive and parse your email generating the following JSON request 
 
 ## Demo ##
 
-For a demo, send an email to [test@demo.dewmail.io](mailto:test@demo.dewmail.io) and go to [http://demo.dewmail.io/](http://demo.dewmail.io/).
+For a demo, send an email to [test@demo.dewmail.io](mailto:test@demo.dewmail.io) and go to [http://dewmail.io/demo.php](http://dewmail.io/demo.php).
 
 ## Install ##
 1. Add the following MX record to the domain you wish to receive calls from Dewmail.
