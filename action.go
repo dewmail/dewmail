@@ -25,6 +25,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -65,29 +66,47 @@ func NewAction(m Message) (*action, error) {
 
 // Initiates the HTTP request
 func (a *action) Do() error {
-	// Make no POST request to url containing JSON
-	request, err := http.NewRequest("POST", a.url, bytes.NewBuffer(a.body))
-//str := "{\"fruits\": {\"apple\": \"red\", \"orange\": \"orange\", \"blueberry\": \"blue\"}, \"veggies\": {\"carrot\": \"orange\", \"pea\": \"green\"}}"
+	// Make call to API
+	BuildJSONPost(a.url, a.body)
 
-//var jsonStr = []byte(str)
-//	request, err := http.NewRequest("POST", a.url, bytes.NewBuffer(jsonStr))
+	// Push record to global datastore
+	BuildJSONPost(OptDataStoreUrl, a.body)
+
+	return nil
+}
+
+func BuildJSONPost(url string, content []byte) error {
+	// Check url valid
+	//TODO: Add better url test
+	if len(url) < 1 {
+		return fmt.Errorf("Invalid URL %s", url)
+	}
+
+	// Make no POST request to url containing JSON
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer(content))
 	if err != nil {
 		return fmt.Errorf("Failed to build request. %v", err)
 	}
 
 	// Display/log request for debugging
-	log.Printf("Request: [%s] %s", a.url, a.body)
+	log.Printf("Request: [%s] %s", url, content)
 
 	// Set request headers
 	request.Header.Set("Content-Type", "application/json")
 
 	// Initiate HTTP client
-	clientHandler := &http.Client{}
+	clientHandler := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
 	response, err := clientHandler.Do(request)
 
 	// Check for errors on response
 	if err != nil {
-		return fmt.Errorf("Failed to get response from %s. %v", a.url, err)
+		return fmt.Errorf("Failed to get response from %s. %v", url, err)
 	}
 	defer response.Body.Close()
 
