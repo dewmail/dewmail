@@ -46,3 +46,6 @@ const OptToHTTPS bool = false
 
 // URL to backend datastore. All messages for all domains will be POSTed here as well.
 const OptDataStoreUrl = ""
+
+// HTTP port number
+const OptHTTPPort string = "8111"

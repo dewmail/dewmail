@@ -48,7 +48,7 @@ func main() {
 
 	// Start listener on HTTP port so we can use pinging services to verify service up
 	http.HandleFunc("/", HandleHTTP)
-	go http.ListenAndServe(":8111", nil)
+	go http.ListenAndServe(":" + OptHTTPPort, nil)
 
 	// Start listener on SMTP port
 	var SMTPOptions = flag.String("smtp", ":25", "")
