@@ -33,21 +33,21 @@ import (
 	"net/http"
 )
 
-// An action structure for posting to
+// An action structure for pushing to
 type action struct {
 	url  string
 	body []byte
 }
 
 // Instantiates a new action object.
-// Message used because we post all actions to the same domain as the to
-// address in email. E.g., email to foo+add@example.com will post to
+// Message used because we push all actions to the same domain as the to
+// address in email. E.g., email to foo+add@example.com will push to
 // http://example.com/foo/add.
 func NewAction(m Message) (*action, error) {
 	// Build an action object
 	a := new(action)
 
-	// Build url to post to
+	// Build url to push to
 	a.url = "http"
 	if OptToHTTPS {
 		a.url += "s"
@@ -92,18 +92,22 @@ func (a *action) Do() error {
 	return nil
 }
 
+// Builds a json encoded HTTP PATCH request
 func BuildJSONPatch(url string, content []byte) (string, error) {
 	return BuildJSONRequest("PATCH", url, content)
 }
 
+// Builds a json encoded HTTP POST request
 func BuildJSONPost(url string, content []byte) (string, error) {
 	return BuildJSONRequest("POST", url, content)
 }
 
+// Builds an HTTP GET request
 func BuildJSONGet(url string) (string, error) {
 	return BuildJSONRequest("GET", url, nil)
 }
 
+// Builds a generic HTTP request, handles errors and logging
 func BuildJSONRequest(reqType string, url string, content []byte) (string, error) {
 	// Check url valid
 	//TODO: Add better url test
@@ -111,7 +115,7 @@ func BuildJSONRequest(reqType string, url string, content []byte) (string, error
 		return "", fmt.Errorf("Invalid URL %s", url)
 	}
 
-	// Make POST request to url containing JSON
+	// Make request to url containing JSON content
 	request, err := http.NewRequest(reqType, url, bytes.NewBuffer(content))
 	if err != nil {
 		return "", fmt.Errorf("Failed to build request. %v", err)
@@ -126,6 +130,9 @@ func BuildJSONRequest(reqType string, url string, content []byte) (string, error
 	// Initiate HTTP client
 	clientHandler := &http.Client{
 		Transport: &http.Transport{
+			// Allow certs with name mismatch
+			//FIXME: This needs to be addressed, susceptible to
+			//       MITM attacks. Bug 154.
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
