@@ -72,20 +72,49 @@ func (a *action) Do() error {
 	// Push record to global datastore
 	BuildJSONPost(OptDataStoreUrl, a.body)
 
+	// Get mailsSent counter from global datastore
+	sMailsSent, getCountErr := BuildJSONGet(OptDataStoreCountUrl)
+	if getCountErr != nil {
+		return fmt.Errorf("Error: Failed to get count of mails sent. %v", getCountErr)
+	}
+
+	// Parse count and increment
+	var MailsSent map[string]int
+	unmarshErr := json.Unmarshal([]byte(sMailsSent), &MailsSent)
+	if unmarshErr != nil {
+		return fmt.Errorf("Error: Failed to unmarshal mailsSent. %v", unmarshErr)
+	}
+	sMailsSent = fmt.Sprintf("{\"count\": %d}", MailsSent["count"]+1)
+
+	// Update mailsSent count in global datastore
+	BuildJSONPatch(OptDataStoreCountUrl, []byte(sMailsSent))
+
 	return nil
 }
 
-func BuildJSONPost(url string, content []byte) error {
+func BuildJSONPatch(url string, content []byte) (string, error) {
+	return BuildJSONRequest("PATCH", url, content)
+}
+
+func BuildJSONPost(url string, content []byte) (string, error) {
+	return BuildJSONRequest("POST", url, content)
+}
+
+func BuildJSONGet(url string) (string, error) {
+	return BuildJSONRequest("GET", url, nil)
+}
+
+func BuildJSONRequest(reqType string, url string, content []byte) (string, error) {
 	// Check url valid
 	//TODO: Add better url test
 	if len(url) < 1 {
-		return fmt.Errorf("Invalid URL %s", url)
+		return "", fmt.Errorf("Invalid URL %s", url)
 	}
 
-	// Make no POST request to url containing JSON
-	request, err := http.NewRequest("POST", url, bytes.NewBuffer(content))
+	// Make POST request to url containing JSON
+	request, err := http.NewRequest(reqType, url, bytes.NewBuffer(content))
 	if err != nil {
-		return fmt.Errorf("Failed to build request. %v", err)
+		return "", fmt.Errorf("Failed to build request. %v", err)
 	}
 
 	// Display/log request for debugging
@@ -106,7 +135,7 @@ func BuildJSONPost(url string, content []byte) error {
 
 	// Check for errors on response
 	if err != nil {
-		return fmt.Errorf("Failed to get response from %s. %v", url, err)
+		return "", fmt.Errorf("Failed to get response from %s. %v", url, err)
 	}
 	defer response.Body.Close()
 
@@ -114,5 +143,6 @@ func BuildJSONPost(url string, content []byte) error {
 	body, _ := ioutil.ReadAll(response.Body)
 	log.Printf("Response: [%s] %s %s", response.Status, response.Header, string(body))
 
-	return nil
+	return string(body), nil
 }
+
