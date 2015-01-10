@@ -38,7 +38,7 @@ import (
 func main() {
 	// Setup logfile
 	tDate := time.Now()
-	var sLogFile string = "dewmail-" + tDate.Format("2006-01-02") + ".log"
+	var sLogFile string = "logs/dewmail-" + tDate.Format("2006-01-02") + ".log"
 	fpLog, err := os.OpenFile(sLogFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Error opening/creating logfile %v", err)
