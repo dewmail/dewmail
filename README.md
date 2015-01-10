@@ -53,4 +53,5 @@ Option|Type|Function
 ```OptAPIRoute```|```string```|Route for Dewmail to POST to (with leading and trailing slashes). Default, ```/```.
 ```OptToHTTPS```|```bool```|Whether to use HTTPS/HTTP for POST request. Default, HTTP, ```false```.
 ```OptDataStoreUrl```|```string```|URL to backend datastore. All messages for all domains will be POSTed here as well. Default, none, ```""```.
+```OptHTTPPort```|```string```|HTTP port number. Default, ```8111```.
 
