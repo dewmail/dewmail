@@ -53,7 +53,7 @@
 		<script src="https://cdn.firebase.com/js/client/2.0.6/firebase.js"></script>
 		<script type="text/javascript">
 		var fb = new Firebase("<YOUR FIREBASE>");
-		fb.limitToLast(2).on("child_added", function(data) {
+		fb.limitToLast(5).on("child_added", function(data) {
 			$("#dewmail-recent").prepend(JSON.stringify(data.val()) + "<br>");
 		});
 		</script>
