@@ -145,9 +145,14 @@ func (m *Message) Close() error {
 	// Send to application for processing
 	a, err := NewAction(*m)
 	if err != nil {
-		return errors.New("Error: Failed to parse action")
+		log.Printf("Error: Failed to parse action. %v", err)
+		return fmt.Errorf("Error: Failed to parse action. %v", err)
 	}
-	a.Do()
+	err = a.Do()
+	if err != nil {
+		log.Printf("Error: Failed to run action. %v", err)
+		return fmt.Errorf("Error: Failed to run action. %v", err)
+	}
 
 	return nil
 }
