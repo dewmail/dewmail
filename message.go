@@ -42,8 +42,8 @@ import (
 type Message struct {
 	From     string `json:"from"`
 	To       string `json:"to"`
-	path     string `json:"path"`
-	domain   string `json:"domain"`
+	path     string
+	domain   string
 	Subject  string `json:"subject"`
 	Body     string `json:"body"`
 	spath    string
