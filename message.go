@@ -34,6 +34,7 @@ import (
 	"mime/multipart"
 	"net/mail"
 	"strings"
+	"time"
 
 	"code.google.com/p/go-smtpd/smtpd"
 )
@@ -46,6 +47,7 @@ type Message struct {
 	domain   string
 	Subject  string `json:"subject"`
 	Body     string `json:"body"`
+	Time     string `json:"time"`
 	spath    string
 	sdomain  string
 	encoding string
@@ -92,6 +94,9 @@ func (m *Message) parse(r io.Reader) error {
 	// Get headers
 	m.To = message.Header.Get("To")
 	m.encoding = message.Header.Get("Content-Type")
+
+	// Set time
+	m.Time = time.Now().UTC().Format(time.RFC3339)
 
 	// Parse to
 	m.spath, m.sdomain = SplitToAddress(m.To)
