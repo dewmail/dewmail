@@ -78,18 +78,37 @@ func (a *action) Do() error {
 		return fmt.Errorf("Error: Failed to get count of mails sent. %v", getCountErr)
 	}
 
-	// Parse count and increment
+	// Get current count of mails sent
 	var MailsSent map[string]int
 	unmarshErr := json.Unmarshal([]byte(sMailsSent), &MailsSent)
 	if unmarshErr != nil {
 		return fmt.Errorf("Error: Failed to unmarshal mailsSent. %v", unmarshErr)
 	}
-	sMailsSent = fmt.Sprintf("{\"count\": %d}", MailsSent["count"]+1)
 
-	// Update mailsSent count in global datastore
-	BuildJSONPatch(OptDataStoreCountUrl, []byte(sMailsSent))
+	// Update mailsSent count in global datastore, try iMaxRetries times
+	var updateCountErr error
+	var sUpdateResp string
+	var UpdateResp map[string]string
+	const iMaxRetries int = 100
+	for iRetries := 1; iRetries <= iMaxRetries; iRetries++ {
+		// Send patch queries until we have incremented the count
+		// The backend datastore will return an error json response if new value isn't greater than old
+		sUpdateResp, updateCountErr = BuildJSONPatch(OptDataStoreCountUrl, []byte(fmt.Sprintf("{\"count\": %d}", MailsSent["count"]+iRetries)))
+		unmarshErr := json.Unmarshal([]byte(sUpdateResp), &UpdateResp)
+		if unmarshErr != nil {
+			return fmt.Errorf("Error: Failed to unmarshal mails sent count update. %v", unmarshErr)
+		}
 
-	return nil
+		// Was a count response returned
+		if _, success := UpdateResp["count"]; success {
+			updateCountErr = nil
+			break
+		} else {
+			updateCountErr = fmt.Errorf("Error: Failed to update sent mail count")
+		}
+	}
+
+	return updateCountErr
 }
 
 // Builds a json encoded HTTP PATCH request
