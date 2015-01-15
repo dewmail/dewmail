@@ -24,13 +24,8 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
 )
 
 // An action structure for pushing to
@@ -109,66 +104,5 @@ func (a *action) Do() error {
 	}
 
 	return updateCountErr
-}
-
-// Builds a json encoded HTTP PATCH request
-func BuildJSONPatch(url string, content []byte) (string, error) {
-	return BuildJSONRequest("PATCH", url, content)
-}
-
-// Builds a json encoded HTTP POST request
-func BuildJSONPost(url string, content []byte) (string, error) {
-	return BuildJSONRequest("POST", url, content)
-}
-
-// Builds an HTTP GET request
-func BuildJSONGet(url string) (string, error) {
-	return BuildJSONRequest("GET", url, nil)
-}
-
-// Builds a generic HTTP request, handles errors and logging
-func BuildJSONRequest(reqType string, url string, content []byte) (string, error) {
-	// Check url valid
-	//TODO: Add better url test
-	if len(url) < 1 {
-		return "", fmt.Errorf("Invalid URL %s", url)
-	}
-
-	// Make request to url containing JSON content
-	request, err := http.NewRequest(reqType, url, bytes.NewBuffer(content))
-	if err != nil {
-		return "", fmt.Errorf("Failed to build request. %v", err)
-	}
-
-	// Display/log request for debugging
-	log.Printf("Request: [%s] %s", url, content)
-
-	// Set request headers
-	request.Header.Set("Content-Type", "application/json")
-
-	// Initiate HTTP client
-	clientHandler := &http.Client{
-		Transport: &http.Transport{
-			// Allow certs with name mismatch
-			//FIXME: This needs to be addressed, susceptible to
-			//       MITM attacks. Bug 154.
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		},
-	}
-	response, err := clientHandler.Do(request)
-
-	// Check for errors on response
-	if err != nil {
-		return "", fmt.Errorf("Failed to get response from %s. %v", url, err)
-	}
-	defer response.Body.Close()
-
-	// Display/log response
-	body, _ := ioutil.ReadAll(response.Body)
-	log.Printf("Response: [%s] %s %s", response.Status, response.Header, string(body))
-
-	return string(body), nil
 }
 
