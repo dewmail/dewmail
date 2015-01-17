@@ -34,6 +34,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"net/mail"
+	"regexp"
 	"strings"
 	"time"
 
@@ -51,6 +52,7 @@ type Message struct {
 	Time     string `json:"time"`
 	SPF      string `json:"spf"`
 	IP       string `json:"sender-IP"`
+	Links    []string `json:"links"`
 	spath    string
 	sdomain  string
 	encoding string
@@ -146,7 +148,7 @@ func (m *Message) parse(r io.Reader) error {
 			nPart, err := part.NextPart()
 			// If reached end of message, stop looping
 			if err == io.EOF {
-				return nil
+				break
 			// Pass errors
 			} else if err != nil {
 				return err
@@ -154,6 +156,7 @@ func (m *Message) parse(r io.Reader) error {
 			} else if strings.Contains(nPart.Header.Get("Content-Type"), "text/plain") {
 				tempPart, _ := ioutil.ReadAll(nPart)
 				m.Body = strings.Replace(strings.Replace(strings.TrimSpace(string(tempPart)), "\r\n", " ", -1), "\n", " ", -1)
+				break
 			// Message had no text/plain formatting
 			//TODO: One day add html parsing to strip tags
 			} else {
@@ -161,6 +164,10 @@ func (m *Message) parse(r io.Reader) error {
 			}
 		}
 	}
+
+	// Extract URLs from body
+	re := regexp.MustCompile(`([a-zA-Z]+:\/\/[^<> ]+[a-zA-Z0-9\/])`)
+	m.Links = re.FindAllString(m.Body, -1)
 
 	return nil
 }
