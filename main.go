@@ -45,13 +45,16 @@ func main() {
 	}
 	defer fpLog.Close()
 	log.SetOutput(fpLog)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	log.Printf("Starting dewmail service ...")
 
 	// Start listener on HTTP port so we can use pinging services to verify service up
 	http.HandleFunc("/", HandleHTTP)
 	go http.ListenAndServe(":" + OptHTTPPort, nil)
 
 	// Start listener on SMTP port
-	var SMTPOptions = flag.String("smtp", ":587", "")
+	var SMTPOptions = flag.String("smtp", ":25", "")
 	SMTPListener, eSMTPError := net.Listen("tcp", *SMTPOptions)
 	if eSMTPError != nil {
 		log.Fatal(fmt.Errorf("Error listening for SMTP %v", eSMTPError))
@@ -72,6 +75,8 @@ func main() {
 		},
 	}
 	SMTPServer.Serve(SMTPListener)
+
+	log.Printf("Stopping dewmail service ...")
 }
 
 // Serve a (malformed) HTML response

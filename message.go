@@ -30,6 +30,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"encoding/json"
 	"mime"
 	"mime/multipart"
 	"net/mail"
@@ -48,6 +49,8 @@ type Message struct {
 	Subject  string `json:"subject"`
 	Body     string `json:"body"`
 	Time     string `json:"time"`
+	SPF      string `json:"spf"`
+	IP       string `json:"sender-IP"`
 	spath    string
 	sdomain  string
 	encoding string
@@ -89,11 +92,40 @@ func (m *Message) BeginData() error {
 
 // Add parse method for Message types
 func (m *Message) parse(r io.Reader) error {
+	var err error
 	message, _ := mail.ReadMessage(r)
 
 	// Get headers
 	m.To = message.Header.Get("To")
 	m.encoding = message.Header.Get("Content-Type")
+	var sReceived string = message.Header.Get("Received")
+
+	// Verify sender before continuing
+	if OptSPFCheck {
+		var sSPFRes string
+		sSPFRes, err = BuildJSONGet(OptSPFAPI, []byte(fmt.Sprintf(
+			`{"apiKey": "%s", "email": "%s", "received": "%s"}`,
+			OptSPFAPIKey, m.From, sReceived)))
+		if err != nil {
+			m.SPF = "TempError"
+		} else {
+			var SPFRes map[string]string
+			err = json.Unmarshal([]byte(sSPFRes), &SPFRes)
+			if err != nil {
+				m.SPF = "TempError"
+			} else {
+				m.SPF = SPFRes["result"]
+				m.IP = SPFRes["sender-IP"]
+			}
+		}
+	} else {
+		m.SPF = "None"
+	}
+
+	// If configured to require SPF pass only and this message doesn't pass, stop with error
+	if OptRequireSPFPass && m.SPF != "Pass" {
+		return fmt.Errorf("Error: SPF not pass for sender %s", m.From)
+	}
 
 	// Set time
 	m.Time = time.Now().UTC().Format(time.RFC3339)

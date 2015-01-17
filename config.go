@@ -50,5 +50,17 @@ const OptDataStoreUrl = ""
 // URL to backend datastore message sent count. All messages for all domains will increment this.
 const OptDataStoreCountUrl = ""
 
-// HTTP port number
+// HTTP port number for serving web requests
 const OptHTTPPort string = "8111"
+
+// Whether we should check SPF validation
+const OptSPFCheck bool = false
+
+// Whether we should abort on SPF anything but pass
+const OptRequireSPFPass bool = false
+
+// Domain of API to check SPF results from
+const OptSPFAPI string = ""
+
+// API key for SPF validation system
+const OptSPFAPIKey string = ""

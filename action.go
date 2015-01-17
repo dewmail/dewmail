@@ -68,7 +68,7 @@ func (a *action) Do() error {
 	BuildJSONPost(OptDataStoreUrl, a.body)
 
 	// Get mailsSent counter from global datastore
-	sMailsSent, getCountErr := BuildJSONGet(OptDataStoreCountUrl)
+	sMailsSent, getCountErr := BuildJSONGet(OptDataStoreCountUrl, nil)
 	if getCountErr != nil {
 		return fmt.Errorf("Error: Failed to get count of mails sent. %v", getCountErr)
 	}
@@ -83,12 +83,12 @@ func (a *action) Do() error {
 	// Update mailsSent count in global datastore, try iMaxRetries times
 	var updateCountErr error
 	var sUpdateResp string
-	var UpdateResp map[string]string
+	var UpdateResp map[string]int
 	const iMaxRetries int = 100
 	for iRetries := 1; iRetries <= iMaxRetries; iRetries++ {
 		// Send patch queries until we have incremented the count
 		// The backend datastore will return an error json response if new value isn't greater than old
-		sUpdateResp, updateCountErr = BuildJSONPatch(OptDataStoreCountUrl, []byte(fmt.Sprintf("{\"count\": %d}", MailsSent["count"]+iRetries)))
+		sUpdateResp, updateCountErr = BuildJSONPatch(OptDataStoreCountUrl, []byte(fmt.Sprintf(`{"count": %d}`, MailsSent["count"]+iRetries)))
 		unmarshErr := json.Unmarshal([]byte(sUpdateResp), &UpdateResp)
 		if unmarshErr != nil {
 			return fmt.Errorf("Error: Failed to unmarshal mails sent count update. %v", unmarshErr)
@@ -100,6 +100,7 @@ func (a *action) Do() error {
 			break
 		} else {
 			updateCountErr = fmt.Errorf("Error: Failed to update sent mail count")
+			continue
 		}
 	}
 

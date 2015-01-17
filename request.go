@@ -43,8 +43,8 @@ func BuildJSONPost(url string, content []byte) (string, error) {
 }
 
 // Builds an HTTP GET request
-func BuildJSONGet(url string) (string, error) {
-	return BuildJSONRequest("GET", url, nil)
+func BuildJSONGet(url string, content []byte) (string, error) {
+	return BuildJSONRequest("GET", url, content)
 }
 
 // Builds a generic HTTP request, handles errors and logging
