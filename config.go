@@ -45,10 +45,10 @@ const OptAPIRoute string = "/"
 const OptToHTTPS bool = false
 
 // URL to backend datastore. All messages for all domains will be POSTed here as well.
-const OptDataStoreUrl = ""
+const OptDataStoreUrl string = ""
 
 // URL to backend datastore message sent count. All messages for all domains will increment this.
-const OptDataStoreCountUrl = ""
+const OptDataStoreCountUrl string = ""
 
 // HTTP port number for serving web requests
 const OptHTTPPort string = "8111"
