@@ -51,7 +51,7 @@ func main() {
 	go http.ListenAndServe(":" + OptHTTPPort, nil)
 
 	// Start listener on SMTP port
-	var SMTPOptions = flag.String("smtp", ":25", "")
+	var SMTPOptions = flag.String("smtp", ":587", "")
 	SMTPListener, eSMTPError := net.Listen("tcp", *SMTPOptions)
 	if eSMTPError != nil {
 		log.Fatal(fmt.Errorf("Error listening for SMTP %v", eSMTPError))
