@@ -10,8 +10,8 @@ First, create the following MX records for your domain ```example.com```
 
 		TYPE|SUBDOMAIN|MAILSERVER HOST|PREF|TTL
 		----|---------|---------------|----|---
-		MX|api|in1.dewmail.io.|10|300
-		MX|api|in2.dewmail.io.|20|300
+		MX|api|in1.dewmail.org.|10|300
+		MX|api|in2.dewmail.org.|20|300
 
 You may then send an email from any client--for example, consider the following message.
 
@@ -26,15 +26,15 @@ Dewmail will receive and parse your email generating the following JSON request
 
 ## Demo ##
 
-For a demo, send an email to [test@demo.dewmail.io](mailto:test@demo.dewmail.io) and go to [http://dewmail.io/demo.php](http://dewmail.io/demo.php).
+For a demo, send an email to [test@demo.dewmail.org](mailto:test@demo.dewmail.org) and go to [http://dewmail.org/demo.php](http://dewmail.org/demo.php).
 
 ## Install ##
 1. Add the following MX record to the domain you wish to receive calls from Dewmail.
 
 		TYPE|SUBDOMAIN|MAILSERVER HOST|PREF|TTL
 		----|---------|---------------|----|---
-		MX|somesubdomain|in1.dewmail.io.|10|300
-		MX|somesubdomain|in2.dewmail.io.|20|300
+		MX|somesubdomain|in1.dewmail.org.|10|300
+		MX|somesubdomain|in2.dewmail.org.|20|300
 
 	**Note:** this will be the domain of the email address you must receive messages at and also the domain Dewmail will POST to looking for your API.
 2. Pull down Dewmail binary or build from source.

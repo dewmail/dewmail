@@ -45,7 +45,7 @@
 
                 <h3>Recent Messages</h3>
                 <p>
-                        Try me! Send an email to <code><a href="mailto:test@demo.dewmail.io">test@demo.dewmail.io</a></code> and watch here.
+                        Try me! Send an email to <code><a href="mailto:test@demo.dewmail.org">test@demo.dewmail.org</a></code> and watch here.
                 </p>
                 <div class="code" id="dewmail-recent"></code>
 
