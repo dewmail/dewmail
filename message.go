@@ -38,7 +38,7 @@ import (
 	"strings"
 	"time"
 
-	"code.google.com/p/go-smtpd/smtpd"
+	"github.com/bradfitz/go-smtpd/smtpd"
 )
 
 // A message structure

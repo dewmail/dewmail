@@ -32,7 +32,7 @@ import (
 	"os"
 	"time"
 
-	"code.google.com/p/go-smtpd/smtpd"
+	"github.com/bradfitz/go-smtpd/smtpd"
 )
 
 func main() {
