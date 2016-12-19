@@ -24,24 +24,35 @@
 
 
 
-// Get json post data
-$sData = file_get_contents('php://input');
-$Data = json_decode($sData);
-// Obscure from email addresses
-$Data->from = preg_replace("/^(.).*@/", "\\1*****@", $Data->from);
+try {
+	// Get json post data
+	$sData = file_get_contents('php://input');
+	$Data = json_decode($sData);
 
-$response = array(
-	"status"=>"good",
-	"response"=>0,
-);
+	if (! isset($Data->from)) {
+		throw new Exception('');
+	}
 
-// Push record to firebase
-$curl = curl_init();
-curl_setopt($curl, CURLOPT_URL, "<YOUR FIREBASE>");
-curl_setopt($curl, CURLOPT_POST, true);
-curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($Data));
-curl_exec($curl);
-curl_close($curl);
+	// Obscure from email addresses
+	$Data->from = preg_replace('/^(.).*@/', '\\1*****@', $Data->from);
+
+	$response = array(
+		'status'=>'good',
+		'response'=>0,
+	);
+
+	// Push record to firebase
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, '<YOUR FIREBASE>');
+	curl_setopt($curl, CURLOPT_POST, true);
+	curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($Data));
+	curl_exec($curl);
+	curl_close($curl);
+} catch (Exception $e) {
+	$response = [
+		'status'=>'error',
+		'response'=>0,
+	];
+}
 
 echo json_encode($response);
-?>

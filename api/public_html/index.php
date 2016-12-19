@@ -31,11 +31,11 @@
 		<style type="text/css">
 		body { padding: 2em; }
 		div.code, code {
+			padding: 1em;
 			background-color: #eee;
 			word-wrap: break-word;
 			padding: 0.5em;
 		}
-		div.code { padding: 1em; }
 		</style>
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -47,7 +47,7 @@
                 <p>
                         Try me! Send an email to <code><a href="mailto:test@demo.dewmail.org">test@demo.dewmail.org</a></code> and watch here.
                 </p>
-                <div class="code" id="dewmail-recent"></code>
+                <code id="dewmail-recent"></code>
 
 		<!-- Firebase -->
 		<script src="https://cdn.firebase.com/js/client/2.0.6/firebase.js"></script>

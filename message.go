@@ -1,8 +1,8 @@
 /*
  * The MIT License (MIT)
- * 
+ *
  *  Copyright (c) 2014 Stephen Parker (withaspark.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -11,7 +11,7 @@
  * furnished to do so, subject to the following conditions:
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *  
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,12 +25,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"encoding/json"
 	"mime"
 	"mime/multipart"
 	"net/mail"
@@ -47,11 +47,11 @@ type Message struct {
 	To       string `json:"to"`
 	path     string
 	domain   string
-	Subject  string `json:"subject"`
-	Body     string `json:"body"`
-	Time     string `json:"time"`
-	SPF      string `json:"spf"`
-	IP       string `json:"sender-IP"`
+	Subject  string   `json:"subject"`
+	Body     string   `json:"body"`
+	Time     string   `json:"time"`
+	SPF      string   `json:"spf"`
+	IP       string   `json:"sender-IP"`
 	Links    []string `json:"links"`
 	spath    string
 	sdomain  string
@@ -98,7 +98,8 @@ func (m *Message) parse(r io.Reader) error {
 	message, _ := mail.ReadMessage(r)
 
 	// Get headers
-	m.To = message.Header.Get("To")
+	To, _ := mail.ParseAddress(message.Header.Get("To"))
+	m.To = To.Address
 	m.encoding = message.Header.Get("Content-Type")
 	var sReceived string = message.Header.Get("Received")
 
@@ -149,16 +150,16 @@ func (m *Message) parse(r io.Reader) error {
 			// If reached end of message, stop looping
 			if err == io.EOF {
 				break
-			// Pass errors
+				// Pass errors
 			} else if err != nil {
 				return err
-			// Grab the text/plain version
+				// Grab the text/plain version
 			} else if strings.Contains(nPart.Header.Get("Content-Type"), "text/plain") {
 				tempPart, _ := ioutil.ReadAll(nPart)
 				m.Body = strings.Replace(strings.Replace(strings.TrimSpace(string(tempPart)), "\r\n", " ", -1), "\n", " ", -1)
 				break
-			// Message had no text/plain formatting
-			//TODO: One day add html parsing to strip tags
+				// Message had no text/plain formatting
+				//TODO: One day add html parsing to strip tags
 			} else {
 				return errors.New("Error: No text/plain formatting of message.")
 			}
